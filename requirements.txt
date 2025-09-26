@@ -1,0 +1,5 @@
+fastapi[all]>0.116,<0.117
+alembic>1.16,<1.17
+gradio
+passlib[bcrypt]
+pyjwt
