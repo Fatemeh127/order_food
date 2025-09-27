@@ -1,13 +1,8 @@
-from sqlalchemy import Column,Integer,String,DateTime,Boolean,Text,func,ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column,Integer,String,DateTime,Boolean,Text,func,ForeignKey
 from core.database import Base
 from passlib.context import CryptContext
-from enum import Enum
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
-
-class UserType(str, Enum):
-    ADMIN = "admin"
-    USER = "user"
 
 class UserModel(Base):
     __tablename__ = "users"

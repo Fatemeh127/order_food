@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.orm import Session
-from user.models import UserModel, UserType
+from user.models import UserModel
 from core.database import get_db
 from core.config import settings
 
@@ -130,10 +130,3 @@ def decode_refresh_token(token):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Authentication failed, {e}")
 
 
-def get_authenticated_admin(user: UserModel = Depends(get_authenticated_user)):
-    if user.user_type == UserType.ADMIN:
-        return user
-    raise HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="Forbidden access to endpoint",
-    )
