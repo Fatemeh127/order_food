@@ -31,10 +31,14 @@ async def user_register(request:UserRegisterSchema,db:Session = Depends(get_db))
     if db.query(UserModel).filter_by(username = request.username.lower()).first():
         raise HTTPException(status.HTTP_201_CREATED, detail="user already exist")
     user_obj = UserModel(username = request.username.lower())
+    print("DEBUG password raw:", repr(request.password), "len:", len(request.password))
+
     user_obj.set_password(request.password)
     db.add(user_obj)
     db.commit()
     return JSONResponse(content = {"detail": "user registerd suuccessfully"})
+
+
 
 @router.post("/refresh_token")
 async def user_refresh_token(request:UserRefreshTokenSchema,db:Session = Depends(get_db)):

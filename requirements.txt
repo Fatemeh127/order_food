@@ -1,5 +1,9 @@
 fastapi[all]>0.116,<0.117
 alembic>1.16,<1.17
 gradio
-passlib[bcrypt]
+#passlib[bcrypt]
+bcrypt==4.0.1
+passlib==1.7.4
+
 pyjwt
+psycopg2-binary

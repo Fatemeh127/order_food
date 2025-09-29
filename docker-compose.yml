@@ -1,0 +1,47 @@
+
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: order_food_db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order_food
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5434:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev  
+    container_name: order_food_backend
+    restart: always
+    ports:
+      - "8010:8010"
+    volumes:
+      - ./core:/app   
+    command: >
+      uvicorn main:app --host 0.0.0.0 --port 8010 --reload
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SQLALCHEMY_DATABASE_URL: "postgresql://postgres:postgres@db:5432/order_food"
+     
+
+      JWT_SECRET_KEY: "brktj%f0g7v82kqcl_@)z3$l@y_zd7-h=(qro6!#5calf=z1ix"
+
+volumes:
+  db_data:
+
+ #SQLALCHEMY_DATABASE_URL: "postgresql://postgres:postgres@db:5432/order_food?options=-csearch_path=public"

@@ -3,7 +3,12 @@
 import gradio as gr
 import requests
 
-API_URL = "http://127.0.0.1:8000"
+
+#API_URL = "http://backend:8010"
+
+API_URL = "http://localhost:8010"
+
+
 
 # ---------------- User API ----------------
 def login(username, password):
@@ -106,3 +111,5 @@ with gr.Blocks() as demo:
         food_out = gr.Textbox(lines=10, label="Recipe")
         btn_food = gr.Button("Get Recipe")
         btn_food.click(get_recipe, inputs=[ingredient, access_token_state], outputs=food_out)
+
+
