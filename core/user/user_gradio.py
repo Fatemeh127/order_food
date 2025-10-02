@@ -4,7 +4,6 @@ import gradio as gr
 import requests
 
 
-#API_URL = "http://backend:8010"
 
 API_URL = "http://localhost:8010"
 

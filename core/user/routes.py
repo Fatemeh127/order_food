@@ -30,6 +30,7 @@ async def user_login(request:UserLoginSchema,db:Session = Depends(get_db)):
 async def user_register(request:UserRegisterSchema,db:Session = Depends(get_db)):
     if db.query(UserModel).filter_by(username = request.username.lower()).first():
         raise HTTPException(status.HTTP_201_CREATED, detail="user already exist")
+    
     user_obj = UserModel(username = request.username.lower())
     print("DEBUG password raw:", repr(request.password), "len:", len(request.password))
 
