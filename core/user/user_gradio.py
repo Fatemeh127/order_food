@@ -1,15 +1,10 @@
-
-# user_gradio.py
 import gradio as gr
 import requests
-
-
+from food.food_api import get_recipe
 
 API_URL = "http://localhost:8010"
 
-
-
-# ---------------- User API ----------------
+# ---------------- User API functions ----------------
 def login(username, password):
     resp = requests.post(
         f"{API_URL}/users/login",
@@ -19,9 +14,8 @@ def login(username, password):
         data = resp.json()
         access_token = data.get("access_token")
         refresh_token = data.get("refresh_token")
-        return " Login successful! Tokens saved.", access_token, refresh_token
-    return f" {resp.json().get('detail', 'Login failed')}"
-
+        return "✅ Login successful!", access_token, refresh_token
+    return f"❌ {resp.json().get('detail', 'Login failed')}"
 
 def register(username, password, password_confirm):
     resp = requests.post(
@@ -34,39 +28,16 @@ def register(username, password, password_confirm):
     )
     return resp.json()
 
-
 def refresh(token):
     resp = requests.post(
         f"{API_URL}/users/refresh_token",
         json={"token": token}
     )
     if resp.status_code == 200:
-        return " Token refreshed!", resp.json().get("access_token")
-    return f" {resp.json().get('detail', 'Failed')}", ""
+        return "✅ Token refreshed!", resp.json().get("access_token")
+    return f"❌ {resp.json().get('detail', 'Failed')}", ""
 
-
-# ---------------- Food API ----------------
-def get_recipe(ingredient, token):
-    if not token:
-        return " Please login first to access recipes."
-    
-    headers = {"Authorization": f"Bearer {token}"}
-    resp = requests.get(f"{API_URL}/foods/{ingredient}", headers=headers)
-
-    if resp.status_code != 200:
-        return f" Error: {resp.json().get('detail', 'Unauthorized')}"
-    
-    data = resp.json()["recipe"]
-    return (
-        f"🍽️ **{data['name']}**\n"
-        f"📂 Category: {data['category']}\n"
-        f"🌍 Area: {data['area']}\n\n"
-        f"📖 Instructions:\n{data['instructions']}\n\n"
-        f"🖼️ Image: {data['thumbnail']}"
-    )
-
-
-# ---------------- Gradio Blocks ----------------
+# ---------------- Gradio Interface ----------------
 with gr.Blocks() as demo:
     gr.Markdown("## 👤 User Management & 🍽️ Food Recipes")
 
@@ -100,15 +71,19 @@ with gr.Blocks() as demo:
         btn_token = gr.Button("Refresh")
         btn_token.click(
             refresh,
-            inputs=refresh_token_state,  
+            inputs=[refresh_token_state],
             outputs=[out_token, access_token_state]
         )
 
-    # ---------- Food Recipes ----------
+    # ---------- Food Recipes + Nutrition ----------
     with gr.Tab("Food Recipes"):
         ingredient = gr.Textbox(label="Food or Ingredient")
-        food_out = gr.Textbox(lines=10, label="Recipe")
-        btn_food = gr.Button("Get Recipe")
-        btn_food.click(get_recipe, inputs=[ingredient, access_token_state], outputs=food_out)
+        food_out = gr.Markdown(label="Recipes & Nutrition")
 
+        btn_food = gr.Button("Get Recipes + Nutrition")
+        btn_food.click(
+            get_recipe,
+            inputs=[ingredient, access_token_state],
+            outputs=food_out
+        )
 

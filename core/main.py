@@ -43,7 +43,14 @@ app.include_router(user_router)
 app = gr.mount_gradio_app(app, demo, path="/")
 
 
+# from pydantic import BaseModel
+# from ai.food_analyzer import analyze_ingredient
 
 
+# class IngredientRequest(BaseModel):
+#     ingredient_name: str
 
-
+# @app.post("/ingredient_info")
+# def get_ingredient_info(data: IngredientRequest):
+#     result = analyze_ingredient(data.ingredient_name)
+#     return {"ingredient": data.ingredient_name, "info": result}

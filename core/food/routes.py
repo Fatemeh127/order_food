@@ -1,6 +1,7 @@
 
 from fastapi import APIRouter, Depends, HTTPException, status
 import requests
+import random
 from user.models import UserModel
 from auth.jwt_auth import get_authenticated_user
 
@@ -8,6 +9,7 @@ router = APIRouter(prefix="/foods", tags=["foods"])
 
 @router.get("/{food_name}")
 async def read_food(food_name: str, user: UserModel = Depends(get_authenticated_user)):
+    
     url = f"https://www.themealdb.com/api/json/v1/1/search.php?s={food_name}"
     resp = requests.get(url)
     data = resp.json()
@@ -18,23 +20,22 @@ async def read_food(food_name: str, user: UserModel = Depends(get_authenticated_
             detail=f"No recipes found for '{food_name}'."
         )
 
-    meal = data["meals"][0]
-    recipe = {
-        "name": meal["strMeal"],
-        "category": meal["strCategory"],
-        "area": meal["strArea"],
-        "instructions": meal["strInstructions"],
-        "thumbnail": meal["strMealThumb"],
-    }
-    return {"user": user.username, "recipe": recipe}
+    meals = data["meals"]
 
+    recipes = []
+    for meal in meals:
+        recipes.append({
+            "name": meal.get("strMeal"),
+            "category": meal.get("strCategory"),
+            "area": meal.get("strArea"),
+            "instructions": meal.get("strInstructions"),
+            "thumbnail": meal.get("strMealThumb"),
+            "video": meal.get("strYoutube"), 
+        })
 
+    if len(recipes) > 5:
+        recipes = random.sample(recipes, 5)
 
-
-
-
-   
-
-
+    return {"user": user.username, "recipes": recipes}
 
 
