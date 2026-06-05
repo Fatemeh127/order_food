@@ -1,17 +1,20 @@
-
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Response
+from fastapi import FastAPI
 import gradio as gr
-from user.user_gradio import demo 
 
+from core.database import Base, engine
+from user.models import UserModel, TokenModel
 
+from user.user_gradio import demo
 from user.routes import router as user_router
 from food.routes import router as food_router
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    print("Application startup")   
-    yield                          
+    print("Application startup")
+    Base.metadata.create_all(bind=engine)
+    yield
     print("Application shutdown")
 
 tags_metadata = [

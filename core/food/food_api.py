@@ -7,13 +7,13 @@ API_URL = "http://localhost:8010"
 def get_recipe(ingredient, token):
     # ------------------- Check login -------------------
     if not token:
-        return "⚠️ Please log in first before searching for recipes."
+        return " Please log in first before searching for recipes."
 
     headers = {"Authorization": f"Bearer {token}"}
     resp = requests.get(f"{API_URL}/foods/{ingredient}", headers=headers)
 
     if resp.status_code != 200:
-        return f"❌ Error: {resp.json().get('detail', 'Unauthorized')}"
+        return f" Error: {resp.json().get('detail', 'Unauthorized')}"
 
     data = resp.json()
 
@@ -30,7 +30,7 @@ def get_recipe(ingredient, token):
         recipes = inner if isinstance(inner, list) else [recipes]
 
     if not isinstance(recipes, list) or not recipes:
-        return f"⚠️ No recipes found for '{ingredient}'."
+        return f" No recipes found for '{ingredient}'."
 
     result_texts = []
 
@@ -44,12 +44,12 @@ def get_recipe(ingredient, token):
 
         result_texts.append(
             f"\n\n###  recipe for **{ingredient.title()}**\n"
-            f"🍽️ **{name}**  \n"
-            f"📂 Category: {category}  \n"
-            f"🌍 Area: {area}  \n\n"
-            f"📖 **Instructions:**  \n{instructions}\n\n"
-            f"🖼️ [Click to View Image]({thumbnail})  \n"
-            f"{'🎥 [Click to Watch Video](' + video + ')  \n' if video else ''}"    
+            f"**{name}**  \n"
+            f"Category: {category}  \n"
+            f"Area: {area}  \n\n"
+            f"**Instructions:**  \n{instructions}\n\n"
+            f"[Click to View Image]({thumbnail})  \n"
+            f"{' [Click to Watch Video](' + video + ')  \n' if video else ''}"    
             f"---\n"
         )
 
@@ -58,14 +58,14 @@ def get_recipe(ingredient, token):
 
     if "error" not in nutrition:
         nutrition_text = (
-            f"\n\n### 🥦 Nutrition Info for **{ingredient.title()}**\n"
-            f"📏 Amount: {nutrition.get('amount', 'N/A')}  \n"
-            f"🔥 Calories: {nutrition.get('calories', 'N/A')} kcal  \n"
-            f"💪 Protein: {nutrition.get('protein', 'N/A')} g  \n"
-            f"🥑 Fat: {nutrition.get('fat', 'N/A')} g  \n"
-            f"🍞 Carbohydrates: {nutrition.get('carbohydrates', 'N/A')} g  \n"
+            f"\n\n### Nutrition Info for **{ingredient.title()}**\n"
+            f" Amount: {nutrition.get('amount', 'N/A')}  \n"
+            f" Calories: {nutrition.get('calories', 'N/A')} kcal  \n"
+            f" Protein: {nutrition.get('protein', 'N/A')} g  \n"
+            f" Fat: {nutrition.get('fat', 'N/A')} g  \n"
+            f" Carbohydrates: {nutrition.get('carbohydrates', 'N/A')} g  \n"
         )
     else:
-        nutrition_text = "\n\n⚠️ Could not retrieve nutrition information."
+        nutrition_text = "\n\n Could not retrieve nutrition information."
 
     return nutrition_text + "\n\n" + "\n\n".join(result_texts) 

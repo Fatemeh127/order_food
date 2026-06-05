@@ -26,7 +26,18 @@ def register(username, password, password_confirm):
             "password_confirm": password_confirm
         }
     )
-    return resp.json()
+
+    print("REGISTER STATUS:", resp.status_code)
+    print("REGISTER TEXT:", resp.text)
+
+    if not resp.ok:
+        return f"❌ Error {resp.status_code}: {resp.text}"
+
+    try:
+        data = resp.json()
+        return data.get("detail", str(data))
+    except requests.exceptions.JSONDecodeError:
+        return f"❌ Response is not JSON: {resp.text}"
 
 def refresh(token):
     resp = requests.post(
